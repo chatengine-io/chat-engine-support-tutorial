@@ -18,7 +18,7 @@ const HomePage = () => {
 
     function onSupportClick() {
         if (!isOpen) {
-            const sender = `User In Need: ${Math.floor(Math.random() * 1000)}`
+            const sender = `User In Need: ${Math.floor(Math.random() * 10000)}`
             setSenderUsername(sender)
 
             axios.post(
