@@ -23,7 +23,7 @@ const HomePage = () => {
 
             axios.post(
                 'https://api.chatengine.io/chats/',
-                {"title": sender, "is_direct_chat": true},
+                {"title": sender},
                 {headers: {"Project-ID": projectID, "User-Name": 'Adam La Morre', "User-Secret": 'pass1234'}}
             )
 
