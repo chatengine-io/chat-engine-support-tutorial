@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 
-import { NotificationOutlined } from '@ant-design/icons'
+import axios from 'axios'
+
+import { NotificationOutlined, CloseOutlined } from '@ant-design/icons'
 
 import { ChatEngineWrapper, ChatSocket, ChatFeed } from 'react-chat-engine'
 
@@ -8,28 +10,60 @@ import { Col } from 'react-grid-system'
 
 
 const HomePage = () => {
+    const [isOpen, setIsOpen] = useState(false)
+    const [chatID, setChatID] = useState(null)
+    const [chatAccessKey, setChatAccessKey] = useState(null)
+    const [senderUsername, setSenderUsername] = useState('')
     const projectID = process.env.REACT_APP_PROJECT_ID
-    const chatID = 57357
-    const chatAccessKey = 'ca-b017568a-0c66-44ab-beb5-a4668add3c13'
-    const senderUsername = 'User In Need'
+
+    function onSupportClick() {
+        if (!isOpen) {
+            const sender = `User In Need: ${Math.floor(Math.random() * 1000)}`
+            setSenderUsername(sender)
+
+            axios.post(
+                'https://api.chatengine.io/chats/',
+                {"title": sender, "is_direct_chat": true},
+                {headers: {"Project-ID": projectID, "User-Name": 'Adam La Morre', "User-Secret": 'pass1234'}}
+            )
+
+            .then(r => {
+                console.log(r.data.id)
+                setChatID(r.data.id)
+                setChatAccessKey(r.data.access_key)
+                setIsOpen(true)
+            })
+        
+        } else { setIsOpen(false) }
+    }
 
     return (
         <div>
-            <Col xs={11} ms={8} md={6} lg={4} style={styles.supportContainer}>
-                <ChatEngineWrapper>
-                    <ChatSocket 
-                        projectID={projectID}
-                        chatID={chatID}
-                        chatAccessKey={chatAccessKey}
-                        senderUsername={senderUsername}
-                    />
+            {
+                isOpen &&
+                <Col xs={11} ms={8} md={6} lg={4} style={styles.supportContainer}>
+                    <ChatEngineWrapper>
+                        <ChatSocket 
+                            projectID={projectID}
+                            chatID={chatID}
+                            chatAccessKey={chatAccessKey}
+                            senderUsername={senderUsername}
+                        />
 
-                    <ChatFeed activeChat={chatID} />
-                </ChatEngineWrapper>
-            </Col>
+                        <ChatFeed activeChat={chatID} />
+                    </ChatEngineWrapper>
+                </Col>
+            }
 
-            <div style={styles.supportButton}>
-                <NotificationOutlined style={styles.supportIcon} />
+            <div 
+                onClick={() => onSupportClick()}
+                style={styles.supportButton}
+            >
+                {
+                    isOpen ?
+                    <CloseOutlined style={styles.supportIcon} /> :
+                    <NotificationOutlined style={styles.supportIcon} />
+                }
             </div>
         </div>
     )
@@ -48,6 +82,7 @@ const styles = {
         boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
     },
     supportButton: { 
+        cursor: 'pointer',
         position: 'absolute', 
         bottom: '24px', 
         right: '24px',
@@ -62,6 +97,6 @@ const styles = {
     supportIcon: { 
         color: 'white', 
         position: 'relative', 
-        top: '14px' 
+        top: '16px' 
     }
 }
