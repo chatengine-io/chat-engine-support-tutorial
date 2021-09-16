@@ -5,8 +5,6 @@ import './index.css'
 import HomePage from './Pages/Home'
 import SupportPage from './Pages/Support'
 
-console.log(window.location.pathname)
-
 ReactDOM.render(
   <React.StrictMode>
     {
